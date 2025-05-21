@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Texaes App</title>
+<style>
+  /* Reset and base */
+  * {
+    box-sizing: border-box;
+  }
+  body, html {
+    margin: 0;
+    height: 100%;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f9f9f9;
+    color: #333;
+  }
+  a {
+    color: #4a90e2;
+    text-decoration: none;
+  }
+  a:hover {
+    text-decoration: underline;
+  }
+
+  /* Splash Screen */
+  #splash {
+    background-color: #6b5b4a; /* brownish-grey */
+    color: #FFF;
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16rem;
+    font-weight: 900;
+    user-select: none;
+  }
+
+  /* Container for the app */
+  #app {
+    display: none;
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Centered login box */
+  #login-container {
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #ecf0f3;
+  }
+  #login-box {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    width: 320px;
+  }
+  #login-box h2 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    font-weight: 700;
+    text-align: center;
+    color: #6b5b4a;
+  }
+  #login-box label {
+    display: block;
+    margin-bottom: 0.3rem;
+    font-weight: 600;
+    color: #555;
+  }
+  #login-box input[type=text],
+  #login-box input[type=email],
+  #login-box input[type=number],
+  #login-box input[type=password] {
+    width: 100%;
+    padding: 0.6rem 0.8rem;
+    margin-bottom: 1rem;
+    border: 1.5px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+  }
+  #login-box input[type=text]:focus,
+  #login-box input[type=email]:focus,
+  #login-box input[type=number]:focus,
+  #login-box input[type=password]:focus {
+    outline: none;
+    border-color: #6b5b4a;
+  }
+  #login-box button {
+    background: #6b5b4a;
+    color: white;
+    border: none;
+    width: 100%;
+    padding: 0.8rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  #login-box button:hover {
+    background-color: #5a4c3e;
+  }
+  #login-box .switch-mode {
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    text-align: center;
+    color: #666;
+    cursor: pointer;
+  }
+  #login-box .error-message {
+    color: #d9534f;
+    margin-bottom: 1rem;
+    text-align: center;
+  }
+
+  /* Navbar */
+  header {
+    background-color: #6b5b4a;
+    color: white;
+    padding: 1rem 2rem;
+    font-weight: 700;
+    font-size: 1.5rem;
+    user-select: none;
+    letter-spacing: 0.05em;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  #navbar {
+    display: flex;
+    background-color: #fff;
+    border-bottom: 2px solid #eee;
+    box-shadow: 0 2px 5px rgb(0 0 0 / 0.07);
+  }
+  #navbar button {
+    flex-grow: 1;
+    padding: 1rem 0;
+    font-weight: 600;
+    font-size: 1rem;
+    border: none;
+    background-color: #fff;
+    cursor: pointer;
+    color: #6b5b4a;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  #navbar button:hover {
+    background-color: #6b5b4a;
+    color: white;
+  }
+  #navbar button.active {
+    background-color: #6b5b4a;
+    color: white;
+  }
+  #logout-btn {
+    background: none;
+    border: none;
+    font-size: 1rem;
+    color: white;
+    cursor: pointer;
+    font-weight: 600;
+    padding: 0.3rem 0.5rem;
+    border-radius: 6px;
+    transition: background-color 0.3s ease;
+  }
+  #logout-btn:hover {
+    background-color: #5a4c3e;
+  }
+
+  /* Content Sections */
+  main {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 1.5rem 3rem;
+    background-color: #f5f5f5;
+  }
+
+  /* Dashboard */
+  #dashboard {
+    display: none;
+  }
+  #dashboard h2 {
+    margin-bottom: 1rem;
+    color: #6b5b4a;
+  }
+  #dashboard .profit-loss {
+    background: white;
+    padding: 1.2rem 1.5rem;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgb(0 0 0 / 0.06);
+    margin-bottom: 2rem;
+  }
+  #dashboard .documents {
+    background: white;
+    padding: 1.2rem 1.5rem;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgb(0 0 0 / 0.06);
+  }
+  #dashboard .documents ul {
+    list-style: disc inside;
+    margin: 0;
+    padding-left: 1rem;
+  }
+
+  /* Profile */
+  #profile {
+    display: none;
+    max-width: 600px;
+    background: white;
+    border-radius: 14px;
+    padding: 2rem;
+    box-shadow: 0 10px 20px rgb(0 0 0 / 0.08);
+  }
+  #profile h2 {
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+    color: #6b5b4a;
+  }
+  #profile .profile-picture-container {
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+  #profile .profile-picture-container img {
+    width: 140px;
+    height: 140px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 3px solid #6b5b4a;
+    display: block;
+    margin: 0 auto 0.5rem auto;
+  }
+  #profile .profile-picture-container label {
+    display: inline-block;
+    background-color: #6b5b4a;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.3s ease;
+  }
+  #profile .profile-picture-container label:hover {
+    background-color: #5a4c3e;
+  }
+  #profile .profile-picture-container input[type="file"] {
+    display: none;
+  }
+  #profile .profile-row {
+    display: flex;
+    margin-bottom: 1rem;
+  }
+  #profile .profile-row label {
+    flex-basis: 140px;
+    font-weight: 700;
+    color: #555;
+  }
+  #profile .profile-row span {
+    flex-grow: 1;
+    font-size: 1.1rem;
+    color: #222;
+  }
+
+  /* Data */
+  #data {
+    display: none;
+    max-width: 700px;
+  }
+  #data h2 {
+    color: #6b5b4a;
+    margin-bottom: 1rem;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    box-shadow: 0 5px 15px rgb(0 0 0 / 0.03);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  th, td {
+    padding: 0.8rem 1rem;
+    border-bottom: 1px solid #dedede;
+    text-align: left;
+    vertical-align: middle;
+  }
+  th {
+    background-color: #6b5b4a;
+    color: white;
+    font-weight: 700;
+  }
+  td input {
+    width: 100%;
+    border: none;
+    padding: 0.3rem 0.5rem;
+    font-size: 1rem;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+  }
+  td input:focus {
+    outline: none;
+    background-color: #f2f9fe;
+    border: 1px solid #6b5b4a;
+  }
+  #data-controls {
+    margin: 1rem 0 2rem 0;
+    display: flex;
+    gap: 1rem;
+  }
+  #data-controls button {
+    background: #6b5b4a;
+    border: none;
+    color: white;
+    padding: 0.6rem 1.2rem;
+    font-size: 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 700;
+    transition: background-color 0.3s ease;
+  }
+  #data-controls button:hover {
+    background-color: #5a4c3e;
+  }
+
+  /* Balance Sheet */
+  #balance-sheet {
+    display: none;
+    max-width: 900px;
+    background: white;
+    padding: 1rem 2rem 3rem 2rem;
+    border-radius: 14px;
+    box-shadow: 0 10px 20px rgb(0 0 0 / 0.08);
+  }
+  #balance-sheet h2 {
+    color: #6b5b4a;
+    margin-bottom: 1rem;
+  }
+  #balance-sheet canvas {
+    max-width: 100%;
+    height: 360px !important;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    #profile {
+      padding: 1rem;
+      max-width: 90vw;
+    }
+    #data {
+      max-width: 90vw;
+    }
+    #balance-sheet {
+      max-width: 90vw;
+      padding: 1rem;
+    }
+    main {
+      padding: 1rem 1.5rem;
+    }
+    #navbar button {
+      font-size: 0.9rem;
+      padding: 0.8rem 0;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div id="splash" aria-label="Opening screen">
+  T
+</div>
+
+<div id="app" role="main" aria-live="polite">
+
+  <!-- LOGIN/REGISTER -->
+  <section id="login-container" aria-label="User authentication">
+    <div id="login-box" role="form" aria-labelledby="login-title">
+      <h2 id="login-title">Create Your Account</h2>
+      <div class="error-message" id="login-error" aria-live="assertive"></div>
+      <form id="login-form" novalidate>
+        <label for="name">Full Name *</label>
+        <input type="text" id="name" name="name" required autocomplete="name" placeholder="John Doe" />
+        
+        <label for="age">Age *</label>
+        <input type="number" id="age" name="age" min="1" max="120" required placeholder="30" />
+        
+        <label for="company">Company Name *</label>
+        <input type="text" id="company" name="company" required placeholder="Texaes Corp" />
+        
+        <label for="contact">Contact Number *</label>
+        <input type="text" id="contact" name="contact" pattern="\\+?[0-9\\-\\s]{7,15}" required placeholder="+1234567890" />
+        
+        <label for="email">Email Address *</label>
+        <input type="email" id="email" name="email" required placeholder="johndoe@example.com" />
+        
+        <label for="address">Home Address *</label>
+        <input type="text" id="address" name="address" required placeholder="123 Street, City, Country" />
+        
+        <label for="password">Password *</label>
+        <input type="password" id="password" name="password" required minlength="6" placeholder="Create a password" />
+        
+        <button type="submit" aria-label="Create Account">Create Account</button>
+      </form>
+      <div class="switch-mode" id="switch-to-login" tabindex="0" role="button" aria-pressed="false">Already have an account? Log in</div>
+    </div>
+  </section>
+
+  <section id="login-container-login" aria-label="User login" style="display:none;">
+    <div id="login-box" role="form" aria-labelledby="login-title-login">
+      <h2 id="login-title-login">Log In to Your Account</h2>
+      <div class="error-message" id="login-error-login" aria-live="assertive"></div>
+      <form id="login-form-login" novalidate>
+        <label for="email-login">Email Address *</label>
+        <input type="email" id="email-login" name="email-login" required placeholder="johndoe@example.com" />
+        <label for="password-login">Password *</label>
+        <input type="password" id="password-login" name="password-login" required placeholder="Enter your password" />
+        <button type="submit" aria-label="Log In">Log In</button>
+      </form>
+      <div class="switch-mode" id="switch-to-register" tabindex="0" role="button" aria-pressed="false">Don't have an account? Create Account</div>
+    </div>
+  </section>
+
+  <!-- APP HEADER -->
+  <header>
+    <div>Texaes</div>
+    <button id="logout-btn" aria-label="Logout">Logout</button>
+  </header>
+
+  <!-- NAVBAR -->
+  <nav id="navbar" role="navigation" aria-label="Main navigation">
+    <button class="nav-btn active" data-tab="dashboard" aria-selected="true" role="tab" tabindex="0">Dashboard</button>
+    <button class="nav-btn" data-tab="profile" aria-selected="false" role="tab" tabindex="-1">Profile</button>
+    <button class="nav-btn" data-tab="data" aria-selected="false" role="tab" tabindex="-1">Data</button>
+    <button class="nav-btn" data-tab="balance-sheet" aria-selected="false" role="tab" tabindex="-1">Balance Sheet</button>
+  </nav>
+
+  <!-- MAIN CONTENT -->
+  <main>
+    <section id="dashboard" role="tabpanel" tabindex="0" aria-label="Dashboard">
+      <h2>Profit & Loss Summary</h2>
+      <div class="profit-loss" aria-live="polite">
+        <p><strong>Total Profit:</strong> <span id="total-profit">$0</span></p>
+        <p><strong>Total Loss:</strong> <span id="total-loss">$0</span></p>
+        <p><strong>Net Balance:</strong> <span id="net-balance">$0</span></p>
+      </div>
+      <div class="documents" aria-label="Specific Documents">
+        <h3>Specific Documents</h3>
+        <ul id="documents-list" aria-live="polite">
+          <!-- dynamic document list -->
+        </ul>
+      </div>
+    </section>
+
+    <section id="profile" role="tabpanel" tabindex="0" aria-label="User Profile">
+      <h2>Profile Information</h2>
+
+      <div class="profile-picture-container">
+        <img id="profile-picture" src="" alt="Profile Picture" />
+        <label for="profile-picture-input">Change Profile Picture</label>
+        <input type="file" id="profile-picture-input" accept="image/*" aria-label="Upload Profile Picture" />
+      </div>
+
+      <div class="profile-row"><label>Name:</label><span id="profile-name"></span></div>
+      <div class="profile-row"><label>Age:</label><span id="profile-age"></span></div>
+      <div class="profile-row"><label>Company Name:</label><span id="profile-company"></span></div>
+      <div class="profile-row"><label>Contact Number:</label><span id="profile-contact"></span></div>
+      <div class="profile-row"><label>Email:</label><span id="profile-email"></span></div>
+      <div class="profile-row"><label>Home Address:</label><span id="profile-address"></span></div>
+    </section>
+
+    <section id="data" role="tabpanel" tabindex="0" aria-label="Data Table">
+      <h2>Data Storage</h2>
+      <div id="data-controls">
+        <button id="add-row-btn" aria-label="Add new row">Add Row</button>
+        <button id="delete-selected-btn" aria-label="Delete selected rows">Delete Selected</button>
+      </div>
+      <table aria-describedby="data-desc" id="data-table">
+        <thead>
+          <tr>
+            <th scope="col"><input type="checkbox" id="select-all" aria-label="Select all rows" /></th>
+            <th scope="col">Name</th>
+            <th scope="col">Number</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <div id="data-desc" style="position:absolute;left:-10000px;">A table resembling Excel for storing names and numbers with ability to add and delete rows.</div>
+    </section>
+
+    <section id="balance-sheet" role="tabpanel" tabindex="0" aria-label="Balance Sheet">
+      <h2>Balance Sheet - Graphical Representation</h2>
+      <canvas id="balanceChart" aria-label="Balance sheet chart"></canvas>
+    </section>
+  </main>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  (() => {
+    const splash = document.getElementById('splash');
+    const app = document.getElementById('app');
+    const loginContainer = document.getElementById('login-container');
+    const loginContainerLogin = document.getElementById('login-container-login');
+    const loginForm = document.getElementById('login-form');
+    const loginError = document.getElementById('login-error');
+    const loginFormLogin = document.getElementById('login-form-login');
+    const loginErrorLogin = document.getElementById('login-error-login');
+    const switchToLogin = document.getElementById('switch-to-login');
+    const switchToRegister = document.getElementById('switch-to-register');
+    const header = document.querySelector('header');
+    const navbar = document.getElementById('navbar');
+    const logoutBtn = document.getElementById('logout-btn');
+    const navButtons = document.querySelectorAll('#navbar button.nav-btn');
+    const sections = {
+      dashboard: document.getElementById('dashboard'),
+      profile: document.getElementById('profile'),
+      data: document.getElementById('data'),
+      'balance-sheet': document.getElementById('balance-sheet'),
+    };
+
+    const profilePictureImg = document.getElementById('profile-picture');
+    const profilePictureInput = document.getElementById('profile-picture-input');
+
+    let currentUser = null; // Will hold user info object
+    let dataRows = []; // For the data table storage
+    let balanceChart = null; // Chart.js instance
+
+    // Utility - sanitize string for localStorage keys
+    function sanitizeKey(email) {
+      return email.replace(/[^\w]/g, '_');
+    }
+
+    // LocalStorage keys
+    const USERS_KEY = 'texaes-users'; // stores all users as JSON object keyed by email
+
+    // Render Splash screen for 5 seconds, then show login setup
+    function startSplash() {
+      splash.style.display = 'flex';
+      app.style.display = 'none';
+      setTimeout(() => {
+        splash.style.display = 'none';
+        showLogin(true); // start with register
+      }, 5000); // 5 seconds
+    }
+
+    // Show login or register UI
+    function showLogin(showRegister) {
+      app.style.display = 'block';
+      header.style.display = 'none';
+      navbar.style.display = 'none';
+      if (showRegister) {
+        loginContainer.style.display = 'flex';
+        loginContainerLogin.style.display = 'none';
+        loginError.textContent = '';
+      } else {
+        loginContainer.style.display = 'none';
+        loginContainerLogin.style.display = 'flex';
+        loginErrorLogin.textContent = '';
+      }
+    }
+
+    // Show main app after login
+    function showApp() {
+      loginContainer.style.display = 'none';
+      loginContainerLogin.style.display = 'none';
+      header.style.display = 'flex';
+      navbar.style.display = 'flex';
+      setActiveTab('dashboard');
+      loadProfile();
+      loadDashboard();
+      loadData();
+      loadBalanceSheet();
+    }
+
+    // Save all users to localStorage
+    function saveUsers(users) {
+      localStorage.setItem(USERS_KEY, JSON.stringify(users));
+    }
+    // Get all users from localStorage
+    function getUsers() {
+      const raw = localStorage.getItem(USERS_KEY);
+      return raw ? JSON.parse(raw) : {};
+    }
+
+    // Register new user
+    loginForm.addEventListener('submit', e => {
+      e.preventDefault();
+      loginError.textContent = '';
+      const form = e.target;
+      const name = form.name.value.trim();
+      const age = Number(form.age.value);
+      const company = form.company.value.trim();
+      const contact = form.contact.value.trim();
+      const email = form.email.value.trim().toLowerCase();
+      const address = form.address.value.trim();
+      const password = form.password.value;
+
+      // Validate inputs (HTML5 also does basic validation)
+      if (!name || !age || age < 1 || age > 120 || !company || !contact || !email || !address || password.length < 6) {
+        loginError.textContent = 'Please fill all fields correctly. Password must be at least 6 chars.';
+        return;
+      }
+
+      // Validate contact pattern (basic)
+      const contactPattern = /^\+?\d[\d-\s]{6,14}\d$/;
+      if (!contactPattern.test(contact)) {
+        loginError.textContent = 'Contact number seems invalid.';
+        return;
+      }
+
+      // Validate email format roughly
+      const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/i;
+      if (!emailPattern.test(email)) {
+        loginError.textContent = 'Invalid email address.';
+        return;
+      }
+
+      const users = getUsers();
+      if (users[email]) {
+        loginError.textContent = 'Email already registered, please log in.';
+        return;
+      }
+
+      // Save user with hashed password (simple base64 for demo - DO NOT use in real app)
+      const userData = {
+        name, age, company, contact, email, address,
+        password: btoa(password),
+        data: [],  // data table rows
+        profitLoss: { profit: 0, loss: 0, documents: [] },
+        profilePicture: '' // base64 string or empty
+      };
+      users[email] = userData;
+      saveUsers(users);
+
+      // Log user in
+      currentUser = userData;
+      localStorage.setItem('texaes-currentUser', email);
+
+      showApp();
+    });
+
+    // Switch to login from register
+    switchToLogin.addEventListener('click', () => {
+      showLogin(false);
+    });
+    switchToLogin.addEventListener('keypress', e => {
+      if (e.key === 'Enter' || e.key === ' ') showLogin(false);
+    });
+
+    // Login with email/password
+    loginFormLogin.addEventListener('submit', e => {
+      e.preventDefault();
+      loginErrorLogin.textContent = '';
+      const form = e.target;
+      const email = form['email-login'].value.trim().toLowerCase();
+      const password = form['password-login'].value;
+
+      if (!email || !password) {
+        loginErrorLogin.textContent = 'Please fill all fields.';
+        return;
+      }
+
+      const users = getUsers();
+      if (!users[email]) {
+        loginErrorLogin.textContent = 'No account found with this email.';
+        return;
+      }
+      const userData = users[email];
+      if (userData.password !== btoa(password)) {
+        loginErrorLogin.textContent = 'Incorrect password.';
+        return;
+      }
+
+      currentUser = userData;
+      localStorage.setItem('texaes-currentUser', email);
+      showApp();
+    });
+
+    switchToRegister.addEventListener('click', () => {
+      showLogin(true);
+    });
+    switchToRegister.addEventListener('keypress', e => {
+      if(e.key === 'Enter' || e.key === ' ') showLogin(true);
+    });
+
+    // Logout handling
+    logoutBtn.addEventListener('click', () => {
+      currentUser = null;
+      localStorage.removeItem('texaes-currentUser');
+      showLogin(true);
+    });
+
+    // Navigation tabs
+    navButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        setActiveTab(btn.dataset.tab);
+      });
+    });
+
+    // Manage accessibility of tabs
+    function setActiveTab(tabName) {
+      navButtons.forEach(btn => {
+        const selected = btn.dataset.tab === tabName;
+        btn.classList.toggle('active', selected);
+        btn.setAttribute('aria-selected', selected ? 'true' : 'false');
+        btn.setAttribute('tabindex', selected ? '0' : '-1');
+      });
+      Object.entries(sections).forEach(([key, el]) => {
+        el.style.display = (key === tabName) ? 'block' : 'none';
+      });
+    }
+
+    // Load Profile to UI, including profile picture
+    function loadProfile() {
+      if (!currentUser) return;
+      document.getElementById('profile-name').textContent = currentUser.name;
+      document.getElementById('profile-age').textContent = currentUser.age;
+      document.getElementById('profile-company').textContent = currentUser.company;
+      document.getElementById('profile-contact').textContent = currentUser.contact;
+      document.getElementById('profile-email').textContent = currentUser.email;
+      document.getElementById('profile-address').textContent = currentUser.address;
+
+      // Load profile picture or default placeholder
+      if(currentUser.profilePicture) {
+        profilePictureImg.src = currentUser.profilePicture;
+      } else {
+        profilePictureImg.src = 'https://via.placeholder.com/140x140.png?text=No+Image';
+      }
+    }
+
+    // Listen for profile picture input change and compress if needed
+    profilePictureInput.addEventListener('change', e => {
+      const file = e.target.files[0];
+      if (!file) return;
+      if (!file.type.startsWith('image/')) {
+        alert('Please select a valid image file.');
+        return;
+      }
+
+      // Compress large images to max width/height and reduce size before storing
+      const img = new Image();
+      const reader = new FileReader();
+
+      reader.onload = function(event) {
+        img.src = event.target.result;
+      };
+
+      img.onload = function() {
+        const MAX_DIMENSION = 500; // max width or height
+        let { width, height } = img;
+        let scale = 1;
+        if (width > height && width > MAX_DIMENSION) {
+          scale = MAX_DIMENSION / width;
+        } else if (height > width && height > MAX_DIMENSION) {
+          scale = MAX_DIMENSION / height;
+        } else if (width === height && width > MAX_DIMENSION) {
+          scale = MAX_DIMENSION / width;
+        }
+
+        if (scale < 1) {
+          width = width * scale;
+          height = height * scale;
+        }
+
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        // Compress to jpeg with quality 0.75
+        const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.75);
+
+        // Save compressed image
+        currentUser.profilePicture = compressedDataUrl;
+        profilePictureImg.src = compressedDataUrl;
+        updateCurrentUserInStorage();
+      };
+
+      reader.readAsDataURL(file);
+    });
+
+    // Load Dashboard data
+    function loadDashboard() {
+      if (!currentUser) return;
+      const pl = currentUser.profitLoss || { profit:0, loss:0, documents:[] };
+      const profitEl = document.getElementById('total-profit');
+      const lossEl = document.getElementById('total-loss');
+      const netEl = document.getElementById('net-balance');
+      profitEl.textContent = `$${pl.profit.toFixed(2)}`;
+      lossEl.textContent = `$${pl.loss.toFixed(2)}`;
+      netEl.textContent = `$${(pl.profit - pl.loss).toFixed(2)}`;
+      const docList = document.getElementById('documents-list');
+      docList.innerHTML = '';
+      if (pl.documents.length === 0) {
+        const li = document.createElement('li');
+        li.textContent = 'No documents available.';
+        docList.appendChild(li);
+      } else {
+        pl.documents.forEach(doc => {
+          const li = document.createElement('li');
+          li.textContent = doc;
+          docList.appendChild(li);
+        });
+      }
+    }
+
+    // Load Data table
+    function loadData() {
+      if (!currentUser) return;
+      const tbody = document.querySelector('#data-table tbody');
+      tbody.innerHTML = '';
+      dataRows = currentUser.data || [];
+
+      dataRows.forEach((row, idx) => {
+        const tr = createDataRow(idx, row.name, row.number);
+        tbody.appendChild(tr);
+      });
+    }
+
+    // Create table row with editable inputs and checkbox
+    function createDataRow(idx, nameVal = '', numberVal = '') {
+      const tr = document.createElement('tr');
+      tr.setAttribute('data-idx', idx);
+
+      // Checkbox cell
+      const tdCheck = document.createElement('td');
+      const checkbox = document.createElement('input');
+      checkbox.type = 'checkbox';
+      checkbox.className = 'row-select';
+      checkbox.setAttribute('aria-label', `Select row ${idx+1}`);
+      tdCheck.appendChild(checkbox);
+      tr.appendChild(tdCheck);
+
+      // Name input
+      const tdName = document.createElement('td');
+      const inputName = document.createElement('input');
+      inputName.type = 'text';
+      inputName.value = nameVal;
+      inputName.setAttribute('aria-label', `Name in row ${idx+1}`);
+      inputName.addEventListener('input', () => {
+        dataRows[idx].name = inputName.value.trim();
+        persistData();
+        loadDashboardDataFromRows();
+        updateBalanceChart();
+      });
+      tdName.appendChild(inputName);
+      tr.appendChild(tdName);
+
+      // Number input
+      const tdNum = document.createElement('td');
+      const inputNum = document.createElement('input');
+      inputNum.type = 'number';
+      inputNum.value = numberVal;
+      inputNum.setAttribute('aria-label', `Number in row ${idx+1}`);
+      inputNum.addEventListener('input', () => {
+        const val = parseFloat(inputNum.value);
+        dataRows[idx].number = isNaN(val) ? 0 : val;
+        persistData();
+        loadDashboardDataFromRows();
+        updateBalanceChart();
+      });
+      tdNum.appendChild(inputNum);
+      tr.appendChild(tdNum);
+
+      return tr;
+    }
+
+    // Persist data rows to currentUser and save users in localStorage
+    function persistData() {
+      currentUser.data = dataRows;
+      updateCurrentUserInStorage();
+    }
+
+    // Update current user data in localStorage all users object
+    function updateCurrentUserInStorage() {
+      const users = getUsers();
+      users[currentUser.email] = currentUser;
+      saveUsers(users);
+    }
+
+    // Add a new empty row to dataRows and update table
+    function addNewRow() {
+      dataRows.push({name:'', number:0});
+      loadData();
+      loadDashboardDataFromRows();
+      updateBalanceChart();
+    }
+
+    // Delete selected rows from dataRows and update table
+    function deleteSelectedRows() {
+      const tbody = document.querySelector('#data-table tbody');
+      const checkboxes = tbody.querySelectorAll('input.row-select');
+      // Filter rows by checked checkboxes
+      const toDeleteIndices = [];
+      checkboxes.forEach((cb, idx) => {
+        if (cb.checked) toDeleteIndices.push(idx);
+      });
+      if (toDeleteIndices.length === 0) return;
+
+      // Remove from dataRows starting from the last index to avoid shifting
+      toDeleteIndices.sort((a,b) => b - a).forEach(idx => {
+        dataRows.splice(idx, 1);
+      });
+      loadData();
+      loadDashboardDataFromRows();
+      updateBalanceChart();
+    }
+
+    // Load profit/loss info from data rows for Dashboard summary
+    function loadDashboardDataFromRows() {
+      if (!currentUser) return;
+      // Let's consider positive numbers are profit, negative numbers are loss
+      let profit = 0;
+      let loss = 0;
+      // For the documents in dashboard, let's show names of rows with number > 0 as "documents"
+      const documents = [];
+      dataRows.forEach(row => {
+        let num = parseFloat(row.number);
+        if (!isNaN(num) && num !== 0) {
+          if (num > 0) {
+            profit += num;
+            if(row.name) documents.push(row.name);
+          } else {
+            loss += Math.abs(num);
+            if(row.name) documents.push(row.name);
+          }
+        }
+      });
+
+      currentUser.profitLoss = { profit, loss, documents };
+      updateCurrentUserInStorage();
+      loadDashboard();
+    }
+
+    // Select All checkbox add event
+    const selectAllBox = document.getElementById('select-all');
+    selectAllBox.addEventListener('change', e => {
+      const checked = selectAllBox.checked;
+      document.querySelectorAll('input.row-select').forEach(cb => {
+        cb.checked = checked;
+      });
+    });
+
+    // Button events for data table
+    document.getElementById('add-row-btn').addEventListener('click', addNewRow);
+    document.getElementById('delete-selected-btn').addEventListener('click', deleteSelectedRows);
+
+    // Load and update Chart.js graph for Balance Sheet based on dataRows
+    function loadBalanceSheet() {
+      const ctx = document.getElementById('balanceChart').getContext('2d');
+      if (balanceChart) {
+        balanceChart.destroy();
+      }
+      balanceChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: dataRows.map(r => r.name || '(No Name)'),
+          datasets: [{
+            label: 'Number Values',
+            data: dataRows.map(r => r.number || 0),
+            backgroundColor: dataRows.map(r => {
+              return (parseFloat(r.number) || 0) >= 0 ? 'rgba(107, 91, 74, 0.7)' : 'rgba(202, 60, 60, 0.7)';
+            }),
+            borderColor: 'rgba(107, 91, 74, 1)',
+            borderWidth: 1,
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: ctx => `Value: ${ctx.parsed.y}`
+              }
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: { stepSize: 10 }
+            }
+          }
+        }
+      });
+    }
+
+    // Update chart after data changes
+    function updateBalanceChart() {
+      if (!balanceChart) return;
+      balanceChart.data.labels = dataRows.map(r => r.name || '(No Name)');
+      balanceChart.data.datasets[0].data = dataRows.map(r => r.number || 0);
+      balanceChart.data.datasets[0].backgroundColor = dataRows.map(r => {
+        return (parseFloat(r.number) || 0) >= 0 ? 'rgba(107, 91, 74, 0.7)' : 'rgba(202, 60, 60, 0.7)';
+      });
+      balanceChart.update();
+    }
+
+    // Restore session if any
+    function restoreSession() {
+      const email = localStorage.getItem('texaes-currentUser');
+      if (!email) return false;
+      const users = getUsers();
+      if (users[email]) {
+        currentUser = users[email];
+        return true;
+      }
+      return false;
+    }
+
+    // Initialize app on page load
+    function init() {
+      if (restoreSession()) {
+        splash.style.display = 'none';
+        showApp();
+      } else {
+        startSplash();
+      }
+    }
+
+    init();
+  })();
+</script>
+
+</body>
+</html>
+
+
